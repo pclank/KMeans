@@ -86,7 +86,7 @@ void initCentroids(void)
         for (int j = 0; j < Nv; j++)
         {
             centroids[i][j] = vectors[index_array[i]][j];
-            printf("%f", centroids[i][j]);
+            printf("%f\n", centroids[i][j]);
         }
     }
 
