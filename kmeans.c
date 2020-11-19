@@ -17,13 +17,14 @@ float vectors[N][Nv];
 // Function Creating N Random Vectors of Size Nv
 void createVectors(void)
 {
-    for (int i = 0; i < N - 1; i++)
+    for (int i = 0; i < N; i++)
     {
-        for (int j = 0; j < Nv - 1; j++)
+        for (int j = 0; j < Nv; j++)
         {
             vectors[i][j] = (float)(((double)rand() - RAND_MAX / 2) / (double)RAND_MAX * Max);
-//            printf("%f\n", vectors[i][j]);
+            printf("%f\n", vectors[i][j]);
         }
+        puts("\n");
     }
 }
 
