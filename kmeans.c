@@ -89,6 +89,8 @@ void initCentroids(void)
             printf("%f", centroids[i][j]);
         }
     }
+
+    puts("\n");
 }
 
 // Function to Calculate Minimum Euclidean Distance (Omitting Square Root) of Every Vector From Every Centroid
