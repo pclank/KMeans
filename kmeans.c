@@ -107,7 +107,7 @@ void calcDistance(void)
             distance = 0;                           // Distance to Zero for Every Centroid
             for (int k = 0; k < Nv; k++)
             {
-                distance += (float)sqrtf(vectors[i][k] - centroids[j][k]);     // Euclidean Distance Omitting Expensive Square Root Operation
+                distance += pow((vectors[i][k] - centroids[j][k]), 2);     // Euclidean Distance Omitting Expensive Square Root Operation
             }
 
             if ((!flag) || (distance < classes[i]))  // Replace Min Distance for Current Vector
