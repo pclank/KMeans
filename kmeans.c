@@ -32,6 +32,7 @@ void generateIndices(void)
     while (i != Nc)
     {
         temp = rand() % Nc;
+//        printf("Printing Indices...\n");
 //        printf("%d\n", temp);
 
         for (int j = 0; j < i; j++)
@@ -60,12 +61,13 @@ void createVectors(void)
 {
     srand(time(NULL));          // Create rand() Seed
 
+    printf("Printing Vectors...\n");
     for (int i = 0; i < N; i++)
     {
         for (int j = 0; j < Nv; j++)
         {
             vectors[i][j] = (float)(((double)rand() - RAND_MAX / 2) / (double)RAND_MAX * Max);
-            printf("%f\n", vectors[i][j]);
+//            printf("%f\n", vectors[i][j]);
         }
         puts("\n");
     }
@@ -74,14 +76,25 @@ void createVectors(void)
 // Function to Initialize Centroids
 void initCentroids(void)
 {
+    generateIndices();                      // Run Function to Generate Indices
 
+//    printf("Printing Centroids...\n");
+    for (int i = 0; i < Nc; i++)            // Fill Centroids
+    {
+        for (int j = 0; j < Nv; j++)
+        {
+            centroids[i][j] = vectors[index_array[i]][j];
+//            printf("%f", centroids[i][j]);
+        }
+    }
 }
 
 // Driver Function
 int main(void)
 {
-    // TODO: Add Driver Code.
+    // TODO: Improve Driver Code.
     createVectors();
+    initCentroids();
 
     return 0;
 }
