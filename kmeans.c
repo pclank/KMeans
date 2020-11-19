@@ -5,17 +5,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <math.h>
 
 // Definitions - Macros
 #define Max 10         // Upper Absolute Value Limit of Vector Values
-#define N 10           // Number of Vectors
-#define Nv 3           // Number of Dimensions
-#define Nc 3            // Number of Centroids
+#define N 5           // Number of Vectors
+#define Nv 1           // Number of Dimensions
+#define Nc 2            // Number of Centroids
 
 // Declare Arrays
 int index_array[Nc];
 float vectors[N][Nv];
 float centroids[Nc][Nv];
+float classes[N];
 
 //**********************************************************
 // Fix to Generate Random Sequence of Non-Repeating Integers
@@ -32,8 +34,8 @@ void generateIndices(void)
     while (i != Nc)
     {
         temp = rand() % Nc;
-//        printf("Printing Indices...\n");
-//        printf("%d\n", temp);
+        printf("Printing Indices...\n");
+        printf("%d\n", temp);
 
         for (int j = 0; j < i; j++)
         {
@@ -51,7 +53,7 @@ void generateIndices(void)
             i++;
         }
 
-        flag = 0;
+        flag = 0;                               // Return Flag to 0
     }
 }
 
@@ -67,7 +69,7 @@ void createVectors(void)
         for (int j = 0; j < Nv; j++)
         {
             vectors[i][j] = (float)(((double)rand() - RAND_MAX / 2) / (double)RAND_MAX * Max);
-//            printf("%f\n", vectors[i][j]);
+            printf("%f\n", vectors[i][j]);
         }
         puts("\n");
     }
@@ -78,13 +80,41 @@ void initCentroids(void)
 {
     generateIndices();                      // Run Function to Generate Indices
 
-//    printf("Printing Centroids...\n");
+    printf("Printing Centroids...\n");
     for (int i = 0; i < Nc; i++)            // Fill Centroids
     {
         for (int j = 0; j < Nv; j++)
         {
             centroids[i][j] = vectors[index_array[i]][j];
-//            printf("%f", centroids[i][j]);
+            printf("%f", centroids[i][j]);
+        }
+    }
+}
+
+// Function to Calculate Minimum Euclidean Distance (Omitting Square Root) of Every Vector From Every Centroid
+void calcDistance(void)
+{
+    unsigned int flag;                          // Flag Indicating Whether The Deepest Loop Has Ran Before for Every Vector
+
+    float distance;
+    for (int i = 0; i < N; i++)                 // For Every Vector
+    {
+        flag = 0;
+        for (int j = 0; j < Nc; j++)            // From Every Centroid
+        {
+            distance = 0;                           // Distance to Zero for Every Centroid
+            for (int k = 0; k < Nv; k++)
+            {
+                distance += (float)sqrtf(vectors[i][k] - centroids[j][k]);     // Euclidean Distance Omitting Expensive Square Root Operation
+            }
+
+            if ((!flag) || (distance < classes[i]))  // Replace Min Distance for Current Vector
+            {
+                classes[i] = distance;
+                flag = 1;
+
+                printf("Printing Distance: %f\n", classes[i]);
+            }
         }
     }
 }
@@ -95,6 +125,7 @@ int main(void)
     // TODO: Improve Driver Code.
     createVectors();
     initCentroids();
+    calcDistance();
 
     return 0;
 }
