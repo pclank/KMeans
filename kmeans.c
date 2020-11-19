@@ -8,16 +8,18 @@
 #include <math.h>
 
 // Definitions - Macros
-#define Max 10         // Upper Absolute Value Limit of Vector Values
-#define N 5           // Number of Vectors
-#define Nv 1           // Number of Dimensions
-#define Nc 2            // Number of Centroids
+#define Max 100         // Upper Absolute Value Limit of Vector Values
+#define N 10           // Number of Vectors
+#define Nv 5           // Number of Dimensions
+#define Nc 3            // Number of Centroids
 
 // Declare Arrays
 int index_array[Nc];
 float vectors[N][Nv];
 float centroids[Nc][Nv];
-float classes[N];
+float classes[N];       // Distance From Closest Centroid
+int cluster[N];         // Which Cluster Every Vector Belongs To
+int vector_num[Nc] = {};     // Number of Vectors for Every Cluster
 
 //**********************************************************
 // Fix to Generate Random Sequence of Non-Repeating Integers
@@ -107,13 +109,20 @@ void calcDistance(void)
             distance = 0;                           // Distance to Zero for Every Centroid
             for (int k = 0; k < Nv; k++)
             {
-                distance += pow((vectors[i][k] - centroids[j][k]), 2);     // Euclidean Distance Omitting Expensive Square Root Operation
+                distance += powf((vectors[i][k] - centroids[j][k]), 2);     // Euclidean Distance Omitting Expensive Square Root Operation
             }
 
-            if ((!flag) || (distance < classes[i]))  // Replace Min Distance for Current Vector
+            if ((!flag) || (distance < classes[i]))  // Replace Min Distance and Cluster for Current Vector
             {
-                classes[i] = distance;
-                flag = 1;
+                classes[i] = distance;                  // Replace Min Distance
+
+                vector_num[cluster[i]]--;               // Decrement Number of Vectors of the Cluster Vector i Used to Belong to
+
+                cluster[i] = j;                         // Replace Cluster
+
+                vector_num[j]++;                        // Increment Number of Vectors of the New Cluster Vector i Belongs to
+
+                flag = 1;                               // Set Flag to "Already Ran Deepest Loop"
 
                 printf("Printing Distance: %f\n", classes[i]);
             }
