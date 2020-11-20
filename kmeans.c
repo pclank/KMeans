@@ -116,7 +116,10 @@ void calcDistance(void)
             {
                 classes[i] = distance;                  // Replace Min Distance
 
-                vector_num[cluster[i]]--;               // Decrement Number of Vectors of the Cluster Vector i Used to Belong to
+                if (flag)
+                {
+                    vector_num[cluster[i]]--;               // Decrement Number of Vectors of the Cluster Vector i Used to Belong to
+                }
 
                 cluster[i] = j;                         // Replace Cluster
 
@@ -137,6 +140,12 @@ int main(void)
     createVectors();
     initCentroids();
     calcDistance();
+
+    printf("\n\nPrinting Number of Elements in Every Cluster...\n");
+    for (int i = 0; i < Nc; i++)
+    {
+        printf("Elements in Cluster %d: %d\n", i, vector_num[i]);
+    }
 
     return 0;
 }
