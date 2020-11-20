@@ -133,6 +133,12 @@ void calcDistance(void)
     }
 }
 
+// Function to Calculate New Centroids
+void calcCentroids(void)
+{
+    // TODO: Add Code and Remember to Use vector_num[] to Possibly Stop the Loop Calculating the Sum of Vectors Early
+}
+
 // Driver Function
 int main(void)
 {
