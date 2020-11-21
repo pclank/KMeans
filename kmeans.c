@@ -59,6 +59,11 @@ void generateIndices(void)
     }
 }
 
+//**************************************
+//  Euclidean Distance - Error Algorithm
+//**************************************
+
+// TODO: Consider the use of a separate function.
 
 // Function Creating N Random Vectors of Size Nv
 void createVectors(void)
@@ -98,9 +103,10 @@ void initCentroids(void)
 // Function to Calculate Minimum Euclidean Distance (Omitting Square Root) of Every Vector From Every Centroid
 void calcDistance(void)
 {
-    unsigned int flag;                          // Flag Indicating Whether The Deepest Loop Has Ran Before for Every Vector
+    int flag;                          // Flag Indicating Whether The Deepest Loop Has Ran Before for Every Vector
 
     float distance;
+    float temp;
     for (int i = 0; i < N; i++)                 // For Every Vector
     {
         flag = 0;
@@ -109,7 +115,8 @@ void calcDistance(void)
             distance = 0;                           // Distance to Zero for Every Centroid
             for (int k = 0; k < Nv; k++)
             {
-                distance += powf((vectors[i][k] - centroids[j][k]), 2);     // Euclidean Distance Omitting Expensive Square Root Operation
+                temp = vectors[i][k] - centroids[j][k];
+                distance += temp * temp;                // Euclidean Distance Omitting Expensive Square Root Operation
             }
 
             if ((!flag) || (distance < classes[i]))  // Replace Min Distance and Cluster for Current Vector
@@ -136,7 +143,35 @@ void calcDistance(void)
 // Function to Calculate New Centroids
 void calcCentroids(void)
 {
-    // TODO: Add Code and Remember to Use vector_num[] to Possibly Stop the Loop Calculating the Sum of Vectors Early
+    for (int i = 0; i < Nc; i++)                // Reset centroid Values to 0
+    {
+        for (int j = 0; j < Nv; j++)
+        {
+            centroids[i][j] = 0;
+        }
+    }
+
+    int cnt;
+    for (int i = 0; i < Nc; i++)                // For Each Cluster Calculate New Centroid Based on Median
+    {
+        cnt = 0;                                    // Variable to Stop Loop Early
+        for (int j = 0; j < N; j++)                 // Sum Up the Vectors Belonging to Cluster i, and Stop the Loop on vector_num[i] containing the Number of Vectors in Cluster i
+        {
+            if (cluster[j] == i)
+            {
+                for (int k = 0; k < Nv; k++)
+                {
+                    centroids[i][k] += (float)((double)vectors[j][k] / (double)vector_num[i]);  // TODO: Make Sure Casting is Worth it.
+                }
+
+                cnt++;
+                if (cnt == vector_num[i])               // Break Loop Early
+                {
+                    break;
+                }
+            }
+        }
+    }
 }
 
 // Driver Function
