@@ -8,10 +8,10 @@
 #include <math.h>
 
 // Definitions - Macros
-#define Max 100         // Upper Absolute Value Limit of Vector Values
-#define N 10           // Number of Vectors
-#define Nv 5           // Number of Dimensions
-#define Nc 3            // Number of Centroids
+#define Max 5         // Upper Absolute Value Limit of Vector Values
+#define N 5           // Number of Vectors
+#define Nv 1           // Number of Dimensions
+#define Nc 2            // Number of Centroids
 
 // Declare Arrays
 int index_array[Nc];
@@ -106,17 +106,16 @@ void calcDistance(void)
     int flag;                          // Flag Indicating Whether The Deepest Loop Has Ran Before for Every Vector
 
     float distance;
-    float temp;
     for (int i = 0; i < N; i++)                 // For Every Vector
     {
         flag = 0;
         for (int j = 0; j < Nc; j++)            // From Every Centroid
         {
+            vector_num[j] = 0;
             distance = 0;                           // Distance to Zero for Every Centroid
             for (int k = 0; k < Nv; k++)
             {
-                temp = vectors[i][k] - centroids[j][k];
-                distance += temp * temp;                // Euclidean Distance Omitting Expensive Square Root Operation
+                distance += (vectors[i][k] - centroids[j][k]) * (vectors[i][k] - centroids[j][k]);                // Euclidean Distance Omitting Expensive Square Root Operation
             }
 
             if ((!flag) || (distance < classes[i]))  // Replace Min Distance and Cluster for Current Vector
@@ -155,6 +154,11 @@ void calcCentroids(void)
     for (int i = 0; i < Nc; i++)                // For Each Cluster Calculate New Centroid Based on Median
     {
         cnt = 0;                                    // Variable to Stop Loop Early
+        if (vector_num[i] == 0)                     // Break If Cluster i is Empty
+        {
+            break;
+        }
+
         for (int j = 0; j < N; j++)                 // Sum Up the Vectors Belonging to Cluster i, and Stop the Loop on vector_num[i] containing the Number of Vectors in Cluster i
         {
             if (cluster[j] == i)
@@ -180,7 +184,18 @@ int main(void)
     // TODO: Improve Driver Code.
     createVectors();
     initCentroids();
+
     calcDistance();
+    calcCentroids();
+
+    printf("\n\nPrinting Number of Elements in Every Cluster...\n");
+    for (int i = 0; i < Nc; i++)
+    {
+        printf("Elements in Cluster %d: %d\n", i, vector_num[i]);
+    }
+
+    calcDistance();
+    calcCentroids();
 
     printf("\n\nPrinting Number of Elements in Every Cluster...\n");
     for (int i = 0; i < Nc; i++)
