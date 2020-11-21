@@ -10,9 +10,9 @@
 
 // Definitions - Macros
 #define Max 100         // Upper Absolute Value Limit of Vector Values
-#define N 1000           // Number of Vectors
-#define Nv 10           // Number of Dimensions
-#define Nc 10           // Number of Centroids
+#define N 100000           // Number of Vectors
+#define Nv 1000           // Number of Dimensions
+#define Nc 100           // Number of Centroids
 #define TermCond 0.000001   // Termination Condition
 
 // Declare Arrays
@@ -23,6 +23,12 @@ float classes[N];       // Distance From Closest Centroid
 int cluster[N];         // Which Cluster Every Vector Belongs To
 int vector_num[Nc] = {};     // Number of Vectors for Every Cluster
 float prev_error[N];    // Previous Distance for Comparison
+
+// *******************************************************************
+#pragma GCC optimize("O3","unroll-loops","omit-frame-pointer","inline", "unsafe-math-optimizations")
+#pragma GCC option("arch=native","tune=native","no-zero-upper")
+//************************************************************
+
 
 //**********************************************************
 // Fix to Generate Random Sequence of Non-Repeating Integers
