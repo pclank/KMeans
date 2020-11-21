@@ -9,10 +9,11 @@
 #include <string.h>
 
 // Definitions - Macros
-#define Max 5         // Upper Absolute Value Limit of Vector Values
-#define N 5           // Number of Vectors
-#define Nv 1           // Number of Dimensions
-#define Nc 2            // Number of Centroids
+#define Max 100         // Upper Absolute Value Limit of Vector Values
+#define N 1000           // Number of Vectors
+#define Nv 100           // Number of Dimensions
+#define Nc 50            // Number of Centroids
+#define TermCond 0.000001   // Termination Condition
 
 // Declare Arrays
 int index_array[Nc];
@@ -21,6 +22,7 @@ float centroids[Nc][Nv];
 float classes[N];       // Distance From Closest Centroid
 int cluster[N];         // Which Cluster Every Vector Belongs To
 int vector_num[Nc] = {};     // Number of Vectors for Every Cluster
+float prev_error[N];    // Previous Distance for Comparison
 
 //**********************************************************
 // Fix to Generate Random Sequence of Non-Repeating Integers
@@ -37,8 +39,8 @@ void generateIndices(void)
     while (i != Nc)
     {
         temp = rand() % N;
-        printf("Printing Indices...\n");
-        printf("%d\n", temp);
+//        printf("Printing Indices...\n");
+//        printf("%d\n", temp);
 
         for (int j = 0; j < i; j++)
         {
@@ -60,9 +62,17 @@ void generateIndices(void)
     }
 }
 
-//**************************************
-//  Euclidean Distance - Error Algorithm
-//**************************************
+//***************************************
+// Function to Copy Errors Between Arrays
+//***************************************
+
+void copyErrors(void)
+{
+    for (int i = 0; i < N; i++)
+    {
+        prev_error[i] = classes[i];
+    }
+}
 
 // TODO: Consider the use of a separate function.
 
@@ -71,15 +81,15 @@ void createVectors(void)
 {
     srand(time(NULL));          // Create rand() Seed
 
-    printf("Printing Vectors...\n");
+//    printf("Printing Vectors...\n");
     for (int i = 0; i < N; i++)
     {
         for (int j = 0; j < Nv; j++)
         {
             vectors[i][j] = (float)(((double)rand() - RAND_MAX / 2) / (double)RAND_MAX * Max);
-            printf("%f\n", vectors[i][j]);
+//            printf("%f\n", vectors[i][j]);
         }
-        puts("\n");
+//        puts("\n");
     }
 }
 
@@ -88,17 +98,17 @@ void initCentroids(void)
 {
     generateIndices();                      // Run Function to Generate Indices
 
-    printf("Printing Centroids...\n");
+//    printf("Printing Centroids...\n");
     for (int i = 0; i < Nc; i++)            // Fill Centroids
     {
         for (int j = 0; j < Nv; j++)
         {
             centroids[i][j] = vectors[index_array[i]][j];
-            printf("%f\n", centroids[i][j]);
+//            printf("%f\n", centroids[i][j]);
         }
     }
 
-    puts("\n");
+//    puts("\n");
 }
 
 // Function to Calculate Minimum Euclidean Distance (Omitting Square Root) of Every Vector From Every Centroid
@@ -135,7 +145,7 @@ void calcDistance(void)
 
                 flag = 1;                               // Set Flag to "Already Ran Deepest Loop"
 
-                printf("Printing Distance: %f\n", classes[i]);
+//                printf("Printing Distance: %f\n", classes[i]);
             }
         }
     }
@@ -180,6 +190,24 @@ void calcCentroids(void)
     }
 }
 
+// Function to Check Conditions of Termination
+int checkCondition(void)
+{
+    int flag = 1;
+
+    for (int i = 0; i < N; i++)
+    {
+        if (fabs(prev_error[i] - classes[i]) >= (double)TermCond)
+        {
+            flag = 0;
+
+            break;
+        }
+    }
+
+    return flag;
+}
+
 // Driver Function
 int main(void)
 {
@@ -189,6 +217,8 @@ int main(void)
 
     calcDistance();
     calcCentroids();
+
+    copyErrors();
 
     printf("\n\nPrinting Number of Elements in Every Cluster...\n");
     for (int i = 0; i < Nc; i++)
