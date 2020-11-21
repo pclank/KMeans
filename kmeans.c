@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+#include <string.h>
 
 // Definitions - Macros
 #define Max 5         // Upper Absolute Value Limit of Vector Values
@@ -35,7 +36,7 @@ void generateIndices(void)
     int i = 0;
     while (i != Nc)
     {
-        temp = rand() % Nc;
+        temp = rand() % N;
         printf("Printing Indices...\n");
         printf("%d\n", temp);
 
@@ -105,13 +106,14 @@ void calcDistance(void)
 {
     int flag;                          // Flag Indicating Whether The Deepest Loop Has Ran Before for Every Vector
 
+    memset(vector_num, sizeof(vector_num), 0);  // Reset Number of Vectors, in Each Cluster, to Zero
+
     float distance;
     for (int i = 0; i < N; i++)                 // For Every Vector
     {
         flag = 0;
         for (int j = 0; j < Nc; j++)            // From Every Centroid
         {
-            vector_num[j] = 0;
             distance = 0;                           // Distance to Zero for Every Centroid
             for (int k = 0; k < Nv; k++)
             {
