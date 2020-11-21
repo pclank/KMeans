@@ -11,8 +11,8 @@
 // Definitions - Macros
 #define Max 100         // Upper Absolute Value Limit of Vector Values
 #define N 1000           // Number of Vectors
-#define Nv 100           // Number of Dimensions
-#define Nc 50            // Number of Centroids
+#define Nv 10           // Number of Dimensions
+#define Nc 10           // Number of Centroids
 #define TermCond 0.000001   // Termination Condition
 
 // Declare Arrays
@@ -116,7 +116,11 @@ void calcDistance(void)
 {
     int flag;                          // Flag Indicating Whether The Deepest Loop Has Ran Before for Every Vector
 
-    memset(vector_num, sizeof(vector_num), 0);  // Reset Number of Vectors, in Each Cluster, to Zero
+    // memset(vector_num, sizeof(vector_num), 0);  // Reset Number of Vectors, in Each Cluster, to Zero
+    for (int n = 0; n < Nc; n++)
+    {
+        vector_num[n] = 0;
+    }
 
     float distance;
     for (int i = 0; i < N; i++)                 // For Every Vector
@@ -193,13 +197,13 @@ void calcCentroids(void)
 // Function to Check Conditions of Termination
 int checkCondition(void)
 {
-    int flag = 1;
+    int flag = 0;
 
     for (int i = 0; i < N; i++)
     {
         if (fabs(prev_error[i] - classes[i]) >= (double)TermCond)
         {
-            flag = 0;
+            flag = 1;
 
             break;
         }
@@ -215,19 +219,24 @@ int main(void)
     createVectors();
     initCentroids();
 
+    int cnt = 0;
+
+    int condition = 1;
+
     calcDistance();
     calcCentroids();
 
-    copyErrors();
-
-    printf("\n\nPrinting Number of Elements in Every Cluster...\n");
-    for (int i = 0; i < Nc; i++)
+    while (condition)
     {
-        printf("Elements in Cluster %d: %d\n", i, vector_num[i]);
-    }
+        printf("Iteration %d...\n\n", cnt);
 
-    calcDistance();
-    calcCentroids();
+        copyErrors();
+        calcDistance();
+        calcCentroids();
+
+        condition = checkCondition();
+        cnt++;
+    }
 
     printf("\n\nPrinting Number of Elements in Every Cluster...\n");
     for (int i = 0; i < Nc; i++)
