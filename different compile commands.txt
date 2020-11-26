@@ -1,0 +1,4 @@
+
+gprof km gmon.out > profile-data.txt
+
+gcc -Wall -pg kmeans.c -o km -march=sandybridge -mavx2 -fopt-info-vec-optimized

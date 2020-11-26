@@ -3,9 +3,9 @@ Flat profile:
 Each sample counts as 0.01 seconds.
   %   cumulative   self              self     total           
  time   seconds   seconds    calls  Ts/call  Ts/call  name    
- 97.08    129.86   129.86                             calcDistance
-  2.75    133.54     3.68                             calcCentroids
-  0.46    134.15     0.61                             createVectors
+ 95.75     88.20    88.20                             calcDistance
+  3.68     91.59     3.39                             calcCentroids
+  0.88     92.40     0.81                             createVectors
 
  %         the percentage of the total running time of the
 time       program used by this function.
