@@ -79,6 +79,9 @@
 		<Unit filename="/home/pclank/CLionProjects/KMeans/kmeans.c">
 			<Option target="KMeans"/>
 		</Unit>
+		<Unit filename="/home/pclank/CLionProjects/KMeans/kmeans_omp.c">
+			<Option target="KMeans"/>
+		</Unit>
 		<Unit filename="/home/pclank/CLionProjects/KMeans/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>

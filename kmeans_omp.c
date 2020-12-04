@@ -1,6 +1,6 @@
-//************************************
-// First Implementation of KMeans Algorithm
-//************************************
+//*********************************************************
+// Parallel Implementation of KMeans Algorithm Using OpenMP
+//*********************************************************
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -129,33 +129,39 @@ void calcDistance(void)
     }
 
     float distance;
+
+//    #pragma omp parallel for collapse(2)        // Parallelize First 2 For-Loops
     for (int i = 0; i < N; i++)                 // For Every Vector
     {
         flag = 0;
+        #pragma omp parallel for private(flag) reduction(+:distance)
         for (int j = 0; j < Nc; j++)            // From Every Centroid
         {
             distance = 0;                           // Distance to Zero for Every Centroid
+            #pragma omp simd reduction(+:distance)
             for (int k = 0; k < Nv; k++)
             {
                 distance += (vectors[i][k] - centroids[j][k]) * (vectors[i][k] - centroids[j][k]);                // Euclidean Distance Omitting Expensive Square Root Operation
             }
 
-            if ((!flag) || (distance < classes[i]))  // Replace Min Distance and Cluster for Current Vector
+            #pragma omp critical
             {
-                classes[i] = distance;                  // Replace Min Distance
-
-                if (flag)
+                if ((!flag) || (distance < classes[i]))  // Replace Min Distance and Cluster for Current Vector
                 {
-                    vector_num[cluster[i]]--;               // Decrement Number of Vectors of the Cluster Vector i Used to Belong to
-                }
+                    classes[i] = distance;                  // Replace Min Distance
 
-                cluster[i] = j;                         // Replace Cluster
+                    if (flag) {
+                        vector_num[cluster[i]]--;               // Decrement Number of Vectors of the Cluster Vector i Used to Belong to
+                    }
 
-                vector_num[j]++;                        // Increment Number of Vectors of the New Cluster Vector i Belongs to
+                    cluster[i] = j;                         // Replace Cluster
 
-                flag = 1;                               // Set Flag to "Already Ran Deepest Loop"
+                    vector_num[j]++;                        // Increment Number of Vectors of the New Cluster Vector i Belongs to
+
+                    flag = 1;                               // Set Flag to "Already Ran Deepest Loop"
 
 //                printf("Printing Distance: %f\n", classes[i]);
+                }
             }
         }
     }
