@@ -134,7 +134,7 @@ void calcDistance(void)
     for (int i = 0; i < N; i++)                 // For Every Vector
     {
         flag = 0;
-        #pragma omp parallel for private(flag) reduction(+:distance)
+        #pragma omp parallel for reduction(+:distance)
         for (int j = 0; j < Nc; j++)            // From Every Centroid
         {
             distance = 0;                           // Distance to Zero for Every Centroid
@@ -144,24 +144,68 @@ void calcDistance(void)
                 distance += (vectors[i][k] - centroids[j][k]) * (vectors[i][k] - centroids[j][k]);                // Euclidean Distance Omitting Expensive Square Root Operation
             }
 
-            #pragma omp critical
+            if ((!flag) || (distance < classes[i]))  // Replace Min Distance and Cluster for Current Vector
             {
-                if ((!flag) || (distance < classes[i]))  // Replace Min Distance and Cluster for Current Vector
+                classes[i] = distance;                  // Replace Min Distance
+
+                if (flag)
                 {
-                    classes[i] = distance;                  // Replace Min Distance
+                    vector_num[cluster[i]]--;               // Decrement Number of Vectors of the Cluster Vector i Used to Belong to
+                }
 
-                    if (flag) {
-                        vector_num[cluster[i]]--;               // Decrement Number of Vectors of the Cluster Vector i Used to Belong to
-                    }
+                cluster[i] = j;                         // Replace Cluster
 
-                    cluster[i] = j;                         // Replace Cluster
+                vector_num[j]++;                        // Increment Number of Vectors of the New Cluster Vector i Belongs to
 
-                    vector_num[j]++;                        // Increment Number of Vectors of the New Cluster Vector i Belongs to
-
-                    flag = 1;                               // Set Flag to "Already Ran Deepest Loop"
+                flag = 1;                               // Set Flag to "Already Ran Deepest Loop"
 
 //                printf("Printing Distance: %f\n", classes[i]);
+            }
+        }
+    }
+}
+
+// Function for Parallel Version of calcDistance()
+void calcDistance2(void)
+{
+    for (int n = 0; n < Nc; n++)
+    {
+        vector_num[n] = 0;
+    }
+
+    float distance;
+
+    #pragma omp parallel for reduction(+:distance) collapse(2)       // Parallelize First 2 For-Loops
+    for (int i = 0; i < N; i++)                 // For Every Vector
+    {
+        for (int j = 0; j < Nc; j++)            // From Every Centroid
+        {
+            distance = 5000000;                           // Distance to Zero for Every Centroid
+            #pragma omp simd reduction(+:distance)
+            for (int k = 0; k < Nv; k++)
+            {
+                distance += (vectors[i][k] - centroids[j][k]) * (vectors[i][k] - centroids[j][k]);                // Euclidean Distance Omitting Expensive Square Root Operation
+            }
+
+            if (distance < classes[i])  // Replace Min Distance and Cluster for Current Vector
+            {
+                classes[i] = distance;                  // Replace Min Distance
+
+                #pragma omp critical
+                {
+                    if (vector_num[cluster[i]] != 0)
+                    {
+                        vector_num[cluster[i]]--;               // Decrement Number of Vectors of the Cluster Vector i Used to Belong to
+                    }
                 }
+
+                cluster[i] = j;                         // Replace Cluster
+
+                #pragma omp critical
+                {
+                    vector_num[j]++;                        // Increment Number of Vectors of the New Cluster Vector i Belongs to
+                }
+//                printf("Printing Distance: %f\n", classes[i]);
             }
         }
     }
@@ -235,7 +279,7 @@ int main(void)
 
     int condition = 1;
 
-    calcDistance();
+    calcDistance2();
     calcCentroids();
 
     while (condition)
@@ -243,7 +287,7 @@ int main(void)
         printf("Iteration %d...\n\n", cnt);
 
         copyErrors();
-        calcDistance();
+        calcDistance2();
         calcCentroids();
 
         condition = checkCondition();
