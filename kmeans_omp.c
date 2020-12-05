@@ -8,20 +8,12 @@
 #include <math.h>
 #include <string.h>
 
-/*
+
 // Definitions - Macros
 #define Max 100         // Upper Absolute Value Limit of Vector Values
 #define N 100000           // Number of Vectors
 #define Nv 1000           // Number of Dimensions
 #define Nc 100           // Number of Centroids
-#define TermCond 0.000001   // Termination Condition
-*/
-
-// TODO: Remove After Testing - Definitions - Macros
-#define Max 10         // Upper Absolute Value Limit of Vector Values
-#define N 10           // Number of Vectors
-#define Nv 3           // Number of Dimensions
-#define Nc 3           // Number of Centroids
 #define TermCond 0.000001   // Termination Condition
 
 // Declare Arrays
@@ -173,7 +165,7 @@ void calcDistance(void)
 }
 
 // Function for Parallel Version of calcDistance()
-void calcDistance2(void)        // TODO: Debug Using Small Sizes and Thread Numbers
+void calcDistance2(void)
 {
     int flag;                          // Flag Indicating Whether The Deepest Loop Has Ran Before for Every Vector
 
@@ -221,7 +213,7 @@ void calcDistance2(void)        // TODO: Debug Using Small Sizes and Thread Numb
         }
     }
 
-    #pragma omp barrier         // TODO: Could Be Useless
+    #pragma omp barrier
 }
 
 // Function to Calculate New Centroids
@@ -250,7 +242,7 @@ void calcCentroids(void)
             {
                 for (int k = 0; k < Nv; k++)
                 {
-                    centroids[i][k] += (float)((double)vectors[j][k] / (double)vector_num[i]);  // TODO: Make Sure Casting is Worth it.
+                    centroids[i][k] += (float)((double)vectors[j][k] / (double)vector_num[i]);
                 }
 
                 cnt++;
