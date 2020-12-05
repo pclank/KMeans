@@ -8,11 +8,20 @@
 #include <math.h>
 #include <string.h>
 
+/*
 // Definitions - Macros
 #define Max 100         // Upper Absolute Value Limit of Vector Values
 #define N 100000           // Number of Vectors
 #define Nv 1000           // Number of Dimensions
 #define Nc 100           // Number of Centroids
+#define TermCond 0.000001   // Termination Condition
+*/
+
+// TODO: Remove After Testing - Definitions - Macros
+#define Max 5         // Upper Absolute Value Limit of Vector Values
+#define N 10           // Number of Vectors
+#define Nv 1           // Number of Dimensions
+#define Nc 3           // Number of Centroids
 #define TermCond 0.000001   // Termination Condition
 
 // Declare Arrays
@@ -172,7 +181,6 @@ void calcDistance2(void)        // TODO: Debug Using Small Sizes and Thread Numb
 {
     int flag;                          // Flag Indicating Whether The Deepest Loop Has Ran Before for Every Vector
 
-    // memset(vector_num, sizeof(vector_num), 0);  // Reset Number of Vectors, in Each Cluster, to Zero
     for (int n = 0; n < Nc; n++)
     {
         vector_num[n] = 0;
@@ -195,10 +203,12 @@ void calcDistance2(void)        // TODO: Debug Using Small Sizes and Thread Numb
                 distance += (vectors[i][k] - centroids[j][k]) * (vectors[i][k] - centroids[j][k]);                // Euclidean Distance Omitting Expensive Square Root Operation
             }
 
-                if ((!flag) || (distance < classes[i]))  // Replace Min Distance and Cluster for Current Vector
-                {
+            if ((!flag) || (distance < classes[i]))  // Replace Min Distance and Cluster for Current Vector
+            {
                     #pragma omp critical
                     {
+                        printf("Thread %d: Distance = %f\n", omp_get_thread_num(), distance);
+
                         classes[i] = distance;                  // Replace Min Distance
 
                         if (flag) {
@@ -213,7 +223,7 @@ void calcDistance2(void)        // TODO: Debug Using Small Sizes and Thread Numb
 
 //                printf("Printing Distance: %f\n", classes[i]);
                     }
-                }
+            }
         }
     }
 }
@@ -289,6 +299,8 @@ int main(void)
     calcDistance2();
     calcCentroids();
 
+    // TODO: Remove After Testing
+    /*
     while (condition)
     {
         printf("Iteration %d...\n\n", cnt);
@@ -300,6 +312,7 @@ int main(void)
         condition = checkCondition();
         cnt++;
     }
+    */
 
     printf("\n\nPrinting Number of Elements in Every Cluster...\n");
     for (int i = 0; i < Nc; i++)
