@@ -143,6 +143,33 @@ KMeans/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/KMeans.dir/build.make CMakeFiles/KMeans.dir/build
 .PHONY : KMeans/fast
 
+kmean_omp_debug.o: kmean_omp_debug.c.o
+
+.PHONY : kmean_omp_debug.o
+
+# target to build an object file
+kmean_omp_debug.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/KMeans.dir/build.make CMakeFiles/KMeans.dir/kmean_omp_debug.c.o
+.PHONY : kmean_omp_debug.c.o
+
+kmean_omp_debug.i: kmean_omp_debug.c.i
+
+.PHONY : kmean_omp_debug.i
+
+# target to preprocess a source file
+kmean_omp_debug.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/KMeans.dir/build.make CMakeFiles/KMeans.dir/kmean_omp_debug.c.i
+.PHONY : kmean_omp_debug.c.i
+
+kmean_omp_debug.s: kmean_omp_debug.c.s
+
+.PHONY : kmean_omp_debug.s
+
+# target to generate assembly for a file
+kmean_omp_debug.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/KMeans.dir/build.make CMakeFiles/KMeans.dir/kmean_omp_debug.c.s
+.PHONY : kmean_omp_debug.c.s
+
 kmeans.o: kmeans.c.o
 
 .PHONY : kmeans.o
@@ -206,6 +233,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... KMeans"
+	@echo "... kmean_omp_debug.o"
+	@echo "... kmean_omp_debug.i"
+	@echo "... kmean_omp_debug.s"
 	@echo "... kmeans.o"
 	@echo "... kmeans.i"
 	@echo "... kmeans.s"

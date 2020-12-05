@@ -76,6 +76,9 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/home/pclank/CLionProjects/KMeans/kmean_omp_debug.c">
+			<Option target="KMeans"/>
+		</Unit>
 		<Unit filename="/home/pclank/CLionProjects/KMeans/kmeans.c">
 			<Option target="KMeans"/>
 		</Unit>

@@ -1,6 +1,6 @@
-//*********************************************************
-// Parallel Implementation of KMeans Algorithm Using OpenMP
-//*********************************************************
+//**************************************************************************
+// Debug Version of Parallel Implementation of KMeans Algorithm Using OpenMP
+//**************************************************************************
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,9 +18,9 @@
 */
 
 // TODO: Remove After Testing - Definitions - Macros
-#define Max 10         // Upper Absolute Value Limit of Vector Values
+#define Max 5         // Upper Absolute Value Limit of Vector Values
 #define N 10           // Number of Vectors
-#define Nv 3           // Number of Dimensions
+#define Nv 2           // Number of Dimensions
 #define Nc 3           // Number of Centroids
 #define TermCond 0.000001   // Termination Condition
 
@@ -111,9 +111,6 @@ void createVectors(void)
 // Function to Initialize Centroids
 void initCentroids(void)
 {
-    // TODO: Put Index Generation Function Back
-    generateIndices();                      // Run Function to Generate Indices
-
 //    printf("Printing Centroids...\n");
     for (int i = 0; i < Nc; i++)            // Fill Centroids
     {
@@ -140,33 +137,38 @@ void calcDistance(void)
 
     float distance;
 
+#pragma omp parallel for        // Parallelize First 2 For-Loops
     for (int i = 0; i < N; i++)                 // For Every Vector
     {
         flag = 0;
+//        #pragma omp parallel for reduction(+:distance)
         for (int j = 0; j < Nc; j++)            // From Every Centroid
         {
             distance = 0;                           // Distance to Zero for Every Centroid
-
+#pragma omp simd reduction(+:distance)
             for (int k = 0; k < Nv; k++)
             {
                 distance += (vectors[i][k] - centroids[j][k]) * (vectors[i][k] - centroids[j][k]);                // Euclidean Distance Omitting Expensive Square Root Operation
             }
 
-            if ((!flag) || (distance < classes[i]))  // Replace Min Distance and Cluster for Current Vector
+#pragma omp critical
             {
-                classes[i] = distance;                  // Replace Min Distance
+                if ((!flag) || (distance < classes[i]))  // Replace Min Distance and Cluster for Current Vector
+                {
+                    classes[i] = distance;                  // Replace Min Distance
 
-                if (flag) {
-                    vector_num[cluster[i]]--;               // Decrement Number of Vectors of the Cluster Vector i Used to Belong to
-                }
+                    if (flag) {
+                        vector_num[cluster[i]]--;               // Decrement Number of Vectors of the Cluster Vector i Used to Belong to
+                    }
 
-                cluster[i] = j;                         // Replace Cluster
+                    cluster[i] = j;                         // Replace Cluster
 
-                vector_num[j]++;                        // Increment Number of Vectors of the New Cluster Vector i Belongs to
+                    vector_num[j]++;                        // Increment Number of Vectors of the New Cluster Vector i Belongs to
 
-                flag = 1;                               // Set Flag to "Already Ran Deepest Loop"
+                    flag = 1;                               // Set Flag to "Already Ran Deepest Loop"
 
 //                printf("Printing Distance: %f\n", classes[i]);
+                }
             }
         }
     }
@@ -188,12 +190,14 @@ void calcDistance2(void)        // TODO: Debug Using Small Sizes and Thread Numb
     #pragma omp parallel for private(flag, i, j, k, distance) shared(classes, cluster) schedule(static) ordered      // Parallelize First 2 For-Loops
     for (i = 0; i < N; i++)                 // For Every Vector
     {
+        printf("\nThread %d: Vector %f\n", omp_get_thread_num(), vectors[i][0]);
+
         flag = 0;
 //        #pragma omp parallel for reduction(+:distance)
         for (j = 0; j < Nc; j++)            // From Every Centroid
         {
             distance = 0;                           // Distance to Zero for Every Centroid
-            #pragma omp simd
+//            #pragma omp simd reduction(+:distance)
             for (k = 0; k < Nv; k++)
             {
                 distance += (vectors[i][k] - centroids[j][k]) * (vectors[i][k] - centroids[j][k]);                // Euclidean Distance Omitting Expensive Square Root Operation
@@ -201,27 +205,29 @@ void calcDistance2(void)        // TODO: Debug Using Small Sizes and Thread Numb
 
             if ((!flag) || (distance < classes[i]))  // Replace Min Distance and Cluster for Current Vector
             {
-                    #pragma omp critical
-                    {
-                        classes[i] = distance;                  // Replace Min Distance
+#pragma omp critical
+                {
+                    printf("Thread %d: Distance = %f\n", omp_get_thread_num(), distance);
 
-                        if (flag) {
-                            vector_num[cluster[i]]--;               // Decrement Number of Vectors of the Cluster Vector i Used to Belong to
-                        }
+                    classes[i] = distance;                  // Replace Min Distance
 
-                        cluster[i] = j;                         // Replace Cluster
+                    if (flag) {
+                        vector_num[cluster[i]]--;               // Decrement Number of Vectors of the Cluster Vector i Used to Belong to
+                    }
 
-                        vector_num[j]++;                        // Increment Number of Vectors of the New Cluster Vector i Belongs to
+                    cluster[i] = j;                         // Replace Cluster
 
-                        flag = 1;                               // Set Flag to "Already Ran Deepest Loop"
+                    vector_num[j]++;                        // Increment Number of Vectors of the New Cluster Vector i Belongs to
+
+                    flag = 1;                               // Set Flag to "Already Ran Deepest Loop"
 
 //                printf("Printing Distance: %f\n", classes[i]);
-                    }
+                }
             }
         }
     }
 
-    #pragma omp barrier         // TODO: Could Be Useless
+#pragma omp barrier         // TODO: Could Be Useless
 }
 
 // Function to Calculate New Centroids
@@ -286,16 +292,47 @@ int main(void)
 {
     // TODO: Improve Driver Code.
     createVectors();
+    generateIndices();
     initCentroids();
 
     int cnt = 0;
 
     int condition = 1;
 
+    // Serial Section
+
+    calcDistance();
+    calcCentroids();
+
+    while (cnt < 3)
+    {
+        printf("Iteration %d...\n\n", cnt);
+
+        copyErrors();
+        calcDistance();
+        calcCentroids();
+
+        condition = checkCondition();
+        cnt++;
+    }
+
+    printf("\n\nPrinting Number of Elements in Every Cluster...\n");
+    for (int i = 0; i < Nc; i++)
+    {
+        printf("Elements in Cluster %d: %d\n", i, vector_num[i]);
+    }
+
+    // Parallel Section
+
+    condition = 1;
+    cnt = 0;
+
+    initCentroids();
+
     calcDistance2();
     calcCentroids();
 
-    while (condition)
+    while (cnt < 3)
     {
         printf("Iteration %d...\n\n", cnt);
 

@@ -4,6 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_C
+  "/home/pclank/CLionProjects/KMeans/kmean_omp_debug.c" "/home/pclank/CLionProjects/KMeans/cmake-build-debug/CMakeFiles/KMeans.dir/kmean_omp_debug.c.o"
   "/home/pclank/CLionProjects/KMeans/kmeans.c" "/home/pclank/CLionProjects/KMeans/cmake-build-debug/CMakeFiles/KMeans.dir/kmeans.c.o"
   "/home/pclank/CLionProjects/KMeans/kmeans_omp.c" "/home/pclank/CLionProjects/KMeans/cmake-build-debug/CMakeFiles/KMeans.dir/kmeans_omp.c.o"
   )
