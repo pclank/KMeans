@@ -81,8 +81,6 @@ void copyErrors(void)
     }
 }
 
-// TODO: Consider the use of a separate function.
-
 // Function Creating N Random Vectors of Size Nv
 void createVectors(void)
 {
@@ -97,6 +95,31 @@ void createVectors(void)
 //            printf("%f\n", vectors[i][j]);
         }
 //        puts("\n");
+    }
+}
+
+// Function of Parallel Version of createVectors
+void createVectors2(void)
+{
+    #pragma omp parallel
+    {
+        srand((time(NULL)) ^ omp_get_thread_num());          // Create rand() Seed and Differentiate for Each Thread
+
+//    printf("Printing Vectors...\n");
+
+        int i, j;
+
+        #pragma omp for private(i, j) ordered
+        for (i = 0; i < N; i++)
+        {
+            #pragma omp simd
+            for (j = 0; j < Nv; j++)
+            {
+                vectors[i][j] = (float) (((double) rand() - RAND_MAX / 2) / (double) RAND_MAX * Max);
+//            printf("%f\n", vectors[i][j]);
+            }
+//        puts("\n");
+        }
     }
 }
 
@@ -318,7 +341,7 @@ int checkCondition(void)
 int main(void)
 {
     // TODO: Improve Driver Code.
-    createVectors();
+    createVectors2();
     initCentroids();
 
     int cnt = 0;
