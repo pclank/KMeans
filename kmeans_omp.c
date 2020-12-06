@@ -228,7 +228,10 @@ void calcCentroids(void)
     }
 
     int cnt;
-    for (int i = 0; i < Nc; i++)                // For Each Cluster Calculate New Centroid Based on Median
+    int i, j, k;
+
+    #pragma omp parallel for private(cnt, i, j, k) shared(vector_num, centroids) ordered    // TODO: Continue Code
+    for (i = 0; i < Nc; i++)                // For Each Cluster Calculate New Centroid Based on Median
     {
         cnt = 0;                                    // Variable to Stop Loop Early
         if (vector_num[i] == 0)                     // Break If Cluster i is Empty
@@ -236,11 +239,12 @@ void calcCentroids(void)
             break;
         }
 
-        for (int j = 0; j < N; j++)                 // Sum Up the Vectors Belonging to Cluster i, and Stop the Loop on vector_num[i] containing the Number of Vectors in Cluster i
+        for (j = 0; j < N; j++)                 // Sum Up the Vectors Belonging to Cluster i, and Stop the Loop on vector_num[i] containing the Number of Vectors in Cluster i
         {
             if (cluster[j] == i)
             {
-                for (int k = 0; k < Nv; k++)
+                #pragma omp sigm
+                for (k = 0; k < Nv; k++)
                 {
                     centroids[i][k] += (float)((double)vectors[j][k] / (double)vector_num[i]);
                 }
