@@ -230,7 +230,6 @@ void calcCentroids(void)
     int cnt;
     int i, j, k;
 
-    #pragma omp parallel for private(cnt, i, j, k) shared(vector_num, centroids) ordered    // TODO: Continue Code
     for (i = 0; i < Nc; i++)                // For Each Cluster Calculate New Centroid Based on Median
     {
         cnt = 0;                                    // Variable to Stop Loop Early
@@ -243,7 +242,45 @@ void calcCentroids(void)
         {
             if (cluster[j] == i)
             {
-                #pragma omp sigm
+                for (k = 0; k < Nv; k++)
+                {
+                    centroids[i][k] += (float)((double)vectors[j][k] / (double)vector_num[i]);
+                }
+
+                cnt++;
+                if (cnt == vector_num[i])               // Break Loop Early
+                {
+                    break;
+                }
+            }
+        }
+    }
+}
+
+// Function for Parallel Version of calcCentroids()
+void calcCentroids2(void)
+{
+    for (int i = 0; i < Nc; i++)                // Reset centroid Values to 0
+    {
+        for (int j = 0; j < Nv; j++)
+        {
+            centroids[i][j] = 0;
+        }
+    }
+
+    int cnt;
+    int i, j, k;
+
+    #pragma omp parallel for private(cnt, i, j, k) shared(vector_num, centroids) ordered
+    for (i = 0; i < Nc; i++)                // For Each Cluster Calculate New Centroid Based on Median
+    {
+        cnt = 0;                                    // Variable to Stop Loop Early
+
+        for (j = 0; j < N; j++)                 // Sum Up the Vectors Belonging to Cluster i, and Stop the Loop on vector_num[i] containing the Number of Vectors in Cluster i
+        {
+            if (cluster[j] == i)
+            {
+                #pragma omp simd
                 for (k = 0; k < Nv; k++)
                 {
                     centroids[i][k] += (float)((double)vectors[j][k] / (double)vector_num[i]);
@@ -289,7 +326,7 @@ int main(void)
     int condition = 1;
 
     calcDistance2();
-    calcCentroids();
+    calcCentroids2();
 
     while (condition)
     {
@@ -297,7 +334,7 @@ int main(void)
 
         copyErrors();
         calcDistance2();
-        calcCentroids();
+        calcCentroids2();
 
         condition = checkCondition();
         cnt++;
