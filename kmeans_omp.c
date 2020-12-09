@@ -30,7 +30,6 @@ float prev_error[N];    // Previous Distance for Comparison
 #pragma GCC option("arch=native","tune=native","no-zero-upper")
 //************************************************************
 
-
 //**********************************************************
 // Fix to Generate Random Sequence of Non-Repeating Integers
 //**********************************************************
