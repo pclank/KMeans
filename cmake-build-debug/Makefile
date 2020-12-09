@@ -224,6 +224,33 @@ kmeans_omp.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/KMeans.dir/build.make CMakeFiles/KMeans.dir/kmeans_omp.c.s
 .PHONY : kmeans_omp.c.s
 
+kmeans_omp_sched.o: kmeans_omp_sched.c.o
+
+.PHONY : kmeans_omp_sched.o
+
+# target to build an object file
+kmeans_omp_sched.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/KMeans.dir/build.make CMakeFiles/KMeans.dir/kmeans_omp_sched.c.o
+.PHONY : kmeans_omp_sched.c.o
+
+kmeans_omp_sched.i: kmeans_omp_sched.c.i
+
+.PHONY : kmeans_omp_sched.i
+
+# target to preprocess a source file
+kmeans_omp_sched.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/KMeans.dir/build.make CMakeFiles/KMeans.dir/kmeans_omp_sched.c.i
+.PHONY : kmeans_omp_sched.c.i
+
+kmeans_omp_sched.s: kmeans_omp_sched.c.s
+
+.PHONY : kmeans_omp_sched.s
+
+# target to generate assembly for a file
+kmeans_omp_sched.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/KMeans.dir/build.make CMakeFiles/KMeans.dir/kmeans_omp_sched.c.s
+.PHONY : kmeans_omp_sched.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -242,6 +269,9 @@ help:
 	@echo "... kmeans_omp.o"
 	@echo "... kmeans_omp.i"
 	@echo "... kmeans_omp.s"
+	@echo "... kmeans_omp_sched.o"
+	@echo "... kmeans_omp_sched.i"
+	@echo "... kmeans_omp_sched.s"
 .PHONY : help
 
 

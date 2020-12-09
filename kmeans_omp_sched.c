@@ -1,6 +1,6 @@
-//*********************************************************
-// Parallel Implementation of KMeans Algorithm Using OpenMP
-//*********************************************************
+//**********************************************************************************************
+// Parallel Implementation of KMeans Algorithm Using OpenMP Including Proposed Thread Scheduling
+//**********************************************************************************************
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -84,7 +84,7 @@ void copyErrors(void)
 // Function of Parallel Version of createVectors
 void createVectors2(void)
 {
-    #pragma omp parallel
+#pragma omp parallel
     {
         srand((time(NULL)) ^ omp_get_thread_num());          // Create rand() Seed and Differentiate for Each Thread
 
@@ -92,10 +92,10 @@ void createVectors2(void)
 
         int i, j;
 
-        #pragma omp for private(i, j) ordered
+#pragma omp for private(i, j) ordered
         for (i = 0; i < N; i++)
         {
-            #pragma omp simd
+#pragma omp simd
             for (j = 0; j < Nv; j++)
             {
                 vectors[i][j] = (float) (((double) rand() - RAND_MAX / 2) / (double) RAND_MAX * Max);
@@ -138,7 +138,7 @@ void calcDistance2(void)
     float distance;
     int i, j, k;
 
-    #pragma omp parallel for private(flag, i, j, k, distance) shared(classes, cluster) schedule(static) ordered      // Parallelize First 2 For-Loops
+#pragma omp parallel for private(flag, i, j, k, distance) shared(classes, cluster) schedule(static) ordered      // Parallelize First 2 For-Loops
     for (i = 0; i < N; i++)                 // For Every Vector
     {
         flag = 0;
@@ -146,7 +146,7 @@ void calcDistance2(void)
         for (j = 0; j < Nc; j++)            // From Every Centroid
         {
             distance = 0;                           // Distance to Zero for Every Centroid
-            #pragma omp simd
+#pragma omp simd
             for (k = 0; k < Nv; k++)
             {
                 distance += (vectors[i][k] - centroids[j][k]) * (vectors[i][k] - centroids[j][k]);                // Euclidean Distance Omitting Expensive Square Root Operation
@@ -154,27 +154,27 @@ void calcDistance2(void)
 
             if ((!flag) || (distance < classes[i]))  // Replace Min Distance and Cluster for Current Vector
             {
-                    #pragma omp critical
-                    {
-                        classes[i] = distance;                  // Replace Min Distance
+#pragma omp critical
+                {
+                    classes[i] = distance;                  // Replace Min Distance
 
-                        if (flag) {
-                            vector_num[cluster[i]]--;               // Decrement Number of Vectors of the Cluster Vector i Used to Belong to
-                        }
+                    if (flag) {
+                        vector_num[cluster[i]]--;               // Decrement Number of Vectors of the Cluster Vector i Used to Belong to
+                    }
 
-                        cluster[i] = j;                         // Replace Cluster
+                    cluster[i] = j;                         // Replace Cluster
 
-                        vector_num[j]++;                        // Increment Number of Vectors of the New Cluster Vector i Belongs to
+                    vector_num[j]++;                        // Increment Number of Vectors of the New Cluster Vector i Belongs to
 
-                        flag = 1;                               // Set Flag to "Already Ran Deepest Loop"
+                    flag = 1;                               // Set Flag to "Already Ran Deepest Loop"
 
 //                printf("Printing Distance: %f\n", classes[i]);
-                    }
+                }
             }
         }
     }
 
-    #pragma omp barrier
+#pragma omp barrier
 }
 
 // Function for Parallel Version of calcCentroids()
@@ -191,7 +191,7 @@ void calcCentroids2(void)
     int cnt;
     int i, j, k;
 
-    #pragma omp parallel for private(cnt, i, j, k) shared(vector_num, centroids) ordered
+#pragma omp parallel for private(cnt, i, j, k) shared(vector_num, centroids) ordered
     for (i = 0; i < Nc; i++)                // For Each Cluster Calculate New Centroid Based on Median
     {
         cnt = 0;                                // Variable to Stop Loop Early
@@ -200,7 +200,7 @@ void calcCentroids2(void)
         {
             if (cluster[j] == i)
             {
-                #pragma omp simd
+#pragma omp simd
                 for (k = 0; k < Nv; k++)
                 {
                     centroids[i][k] += (float)((double)vectors[j][k] / (double)vector_num[i]);
