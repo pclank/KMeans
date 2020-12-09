@@ -1,0 +1,14 @@
+// Static Scheduling
+real	0m26.805s
+user	2m3.965s
+sys	0m12.744s
+
+// Guided Scheduling
+real	0m40.793s
+user	2m47.832s
+sys	0m8.917s
+
+// Auto Scheduling
+real	0m25.803s
+user	2m0.725s
+sys	0m11.099s
