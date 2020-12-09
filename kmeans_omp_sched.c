@@ -16,6 +16,8 @@
 #define Nc 100           // Number of Centroids
 #define TermCond 0.000001   // Termination Condition
 
+#define ScheduleType static   // Type of Thread Scheduling Used
+
 // Declare Arrays
 int index_array[Nc];
 float vectors[N][Nv];
@@ -90,7 +92,7 @@ void createVectors2(void)
 
         int i, j;                   // Index Variables Declared Outside Loops for Good Practice
 
-        #pragma omp for private(i, j) ordered
+        #pragma omp for private(i, j) schedule(ScheduleType) ordered
         for (i = 0; i < N; i++)
         {
             #pragma omp simd
@@ -134,7 +136,7 @@ void calcDistance2(void)
     float distance;
     int i, j, k;                        // Index Variables Declared Outside Loops for Good Practice
 
-    #pragma omp parallel for private(flag, i, j, k, distance) shared(classes, cluster) schedule(static) ordered      // Parallelize First 2 For-Loops
+    #pragma omp parallel for private(flag, i, j, k, distance) shared(classes, cluster) schedule(ScheduleType) ordered      // Parallelize First 2 For-Loops
     for (i = 0; i < N; i++)                 // For Every Vector
     {
         flag = 0;
@@ -186,7 +188,7 @@ void calcCentroids2(void)
     int cnt;
     int i, j, k;                                // Index Variables Declared Outside Loops for Good Practice
 
-    #pragma omp parallel for private(cnt, i, j, k) shared(vector_num, centroids) ordered
+    #pragma omp parallel for private(cnt, i, j, k) shared(vector_num, centroids) schedule(ScheduleType) ordered
     for (i = 0; i < Nc; i++)                // For Each Cluster Calculate New Centroid Based on Median
     {
         cnt = 0;                                // Variable to Stop Loop Early
