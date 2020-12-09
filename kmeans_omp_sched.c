@@ -263,7 +263,7 @@ int main(void)
         calcDistance2();
         calcCentroids2();
 
-        printDistance();
+//        printDistance();
 
         condition = checkCondition();
         cnt++;
