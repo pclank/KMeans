@@ -81,23 +81,6 @@ void copyErrors(void)
     }
 }
 
-// Function Creating N Random Vectors of Size Nv
-void createVectors(void)
-{
-    srand(time(NULL));          // Create rand() Seed
-
-//    printf("Printing Vectors...\n");
-    for (int i = 0; i < N; i++)
-    {
-        for (int j = 0; j < Nv; j++)
-        {
-            vectors[i][j] = (float)(((double)rand() - RAND_MAX / 2) / (double)RAND_MAX * Max);
-//            printf("%f\n", vectors[i][j]);
-        }
-//        puts("\n");
-    }
-}
-
 // Function of Parallel Version of createVectors
 void createVectors2(void)
 {
@@ -140,51 +123,6 @@ void initCentroids(void)
     }
 
 //    puts("\n");
-}
-
-// Function to Calculate Minimum Euclidean Distance (Omitting Square Root) of Every Vector From Every Centroid
-void calcDistance(void)
-{
-    int flag;                          // Flag Indicating Whether The Deepest Loop Has Ran Before for Every Vector
-
-    // memset(vector_num, sizeof(vector_num), 0);  // Reset Number of Vectors, in Each Cluster, to Zero
-    for (int n = 0; n < Nc; n++)
-    {
-        vector_num[n] = 0;
-    }
-
-    float distance;
-
-    for (int i = 0; i < N; i++)                 // For Every Vector
-    {
-        flag = 0;
-        for (int j = 0; j < Nc; j++)            // From Every Centroid
-        {
-            distance = 0;                           // Distance to Zero for Every Centroid
-
-            for (int k = 0; k < Nv; k++)
-            {
-                distance += (vectors[i][k] - centroids[j][k]) * (vectors[i][k] - centroids[j][k]);                // Euclidean Distance Omitting Expensive Square Root Operation
-            }
-
-            if ((!flag) || (distance < classes[i]))  // Replace Min Distance and Cluster for Current Vector
-            {
-                classes[i] = distance;                  // Replace Min Distance
-
-                if (flag) {
-                    vector_num[cluster[i]]--;               // Decrement Number of Vectors of the Cluster Vector i Used to Belong to
-                }
-
-                cluster[i] = j;                         // Replace Cluster
-
-                vector_num[j]++;                        // Increment Number of Vectors of the New Cluster Vector i Belongs to
-
-                flag = 1;                               // Set Flag to "Already Ran Deepest Loop"
-
-//                printf("Printing Distance: %f\n", classes[i]);
-            }
-        }
-    }
 }
 
 // Function for Parallel Version of calcDistance()
@@ -237,47 +175,6 @@ void calcDistance2(void)
     }
 
     #pragma omp barrier
-}
-
-// Function to Calculate New Centroids
-void calcCentroids(void)
-{
-    for (int i = 0; i < Nc; i++)                // Reset centroid Values to 0
-    {
-        for (int j = 0; j < Nv; j++)
-        {
-            centroids[i][j] = 0;
-        }
-    }
-
-    int cnt;
-    int i, j, k;
-
-    for (i = 0; i < Nc; i++)                // For Each Cluster Calculate New Centroid Based on Median
-    {
-        cnt = 0;                                    // Variable to Stop Loop Early
-        if (vector_num[i] == 0)                     // Break If Cluster i is Empty
-        {
-            break;
-        }
-
-        for (j = 0; j < N; j++)                 // Sum Up the Vectors Belonging to Cluster i, and Stop the Loop on vector_num[i] containing the Number of Vectors in Cluster i
-        {
-            if (cluster[j] == i)
-            {
-                for (k = 0; k < Nv; k++)
-                {
-                    centroids[i][k] += (float)((double)vectors[j][k] / (double)vector_num[i]);
-                }
-
-                cnt++;
-                if (cnt == vector_num[i])               // Break Loop Early
-                {
-                    break;
-                }
-            }
-        }
-    }
 }
 
 // Function for Parallel Version of calcCentroids()
