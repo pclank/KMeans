@@ -81,6 +81,18 @@ void copyErrors(void)
     }
 }
 
+//********************************************************
+// Function to Print Minimum Vector Distance from Centroid
+//********************************************************
+
+void printDistance(void)
+{
+    for (int i = 0; i < N; i++)
+    {
+        printf("Min. Distance for Vector %d: %f\n", i, classes[i]);
+    }
+}
+
 // Function of Parallel Version of createVectors
 void createVectors2(void)
 {
@@ -254,6 +266,8 @@ int main(void)
         copyErrors();
         calcDistance2();
         calcCentroids2();
+
+        printDistance();
 
         condition = checkCondition();
         cnt++;
