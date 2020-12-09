@@ -90,7 +90,7 @@ void createVectors2(void)
 
 //    printf("Printing Vectors...\n");
 
-        int i, j;
+        int i, j;                               // Index Variables Declared Outside Loops for Good Practice
 
         #pragma omp for private(i, j) ordered
         for (i = 0; i < N; i++)
@@ -136,13 +136,12 @@ void calcDistance2(void)
     }
 
     float distance;
-    int i, j, k;
+    int i, j, k;                        // Index Variables Declared Outside Loops for Good Practice
 
     #pragma omp parallel for private(flag, i, j, k, distance) shared(classes, cluster) schedule(static) ordered      // Parallelize First 2 For-Loops
     for (i = 0; i < N; i++)                 // For Every Vector
     {
         flag = 0;
-//        #pragma omp parallel for reduction(+:distance)
         for (j = 0; j < Nc; j++)            // From Every Centroid
         {
             distance = 0;                           // Distance to Zero for Every Centroid
@@ -189,7 +188,7 @@ void calcCentroids2(void)
     }
 
     int cnt;
-    int i, j, k;
+    int i, j, k;                                // Index Variables Declared Outside Loops for Good Practice
 
     #pragma omp parallel for private(cnt, i, j, k) shared(vector_num, centroids) ordered
     for (i = 0; i < Nc; i++)                // For Each Cluster Calculate New Centroid Based on Median
