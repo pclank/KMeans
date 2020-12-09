@@ -1,8 +1,11 @@
-
+// Profiler
 gprof km gmon.out > profile-data.txt
 
-/ Serial
+// Serial
 gcc -Wall -pg kmeans.c -o km -march=sandybridge -mavx2 -fopt-info-vec-optimized
 
 // Parallel
 gcc -Wall -pg kmeans_omp.c -o km_omp -O4 -fopenmp -march=sandybridge -mavx2 -fopt-info-vec-optimized
+
+// Parallel - Thread Scheduling
+gcc -Wall -pg kmeans_omp_sched.c -o km_omp_sched -fopenmp -march=sandybridge -mavx2 -fopt-info

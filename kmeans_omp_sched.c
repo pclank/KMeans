@@ -16,7 +16,7 @@
 #define Nc 100           // Number of Centroids
 #define TermCond 0.000001   // Termination Condition
 
-#define ScheduleType static   // Type of Thread Scheduling Used
+#define ScheduleType auto   // Type of Thread Scheduling Used
 
 // Declare Arrays
 int index_array[Nc];
