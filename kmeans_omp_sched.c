@@ -8,7 +8,6 @@
 #include <math.h>
 #include <string.h>
 
-
 // Definitions - Macros
 #define Max 100         // Upper Absolute Value Limit of Vector Values
 #define N 100000           // Number of Vectors
