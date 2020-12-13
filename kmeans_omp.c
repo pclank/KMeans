@@ -95,7 +95,7 @@ void printDistance(void)
 // Function of Parallel Version of createVectors
 void createVectors2(void)
 {
-    #pragma omp parallel
+    #pragma omp parallel                    // Create Parallel Section
     {
         srand((time(NULL)) ^ omp_get_thread_num());          // Create rand() Seed and Differentiate for Each Thread
 
@@ -103,7 +103,7 @@ void createVectors2(void)
 
         int i, j;                               // Index Variables Declared Outside Loops for Good Practice
 
-        #pragma omp for private(i, j) ordered
+        #pragma omp for private(i, j) ordered   // Parallelize First For - Loop
         for (i = 0; i < N; i++)
         {
             #pragma omp simd
@@ -149,7 +149,7 @@ void calcDistance2(void)
     float distance;
     int i, j, k;                        // Index Variables Declared Outside Loops for Good Practice
 
-    #pragma omp parallel for private(flag, i, j, k, distance) shared(classes, cluster) schedule(static) ordered      // Parallelize First 2 For-Loops
+    #pragma omp parallel for private(flag, i, j, k, distance) shared(classes, cluster) schedule(static) ordered      // Parallelize First For-Loop
     for (i = 0; i < N; i++)                 // For Every Vector
     {
         flag = 0;
@@ -164,11 +164,12 @@ void calcDistance2(void)
 
             if ((!flag) || (distance < classes[i]))  // Replace Min Distance and Cluster for Current Vector
             {
-                    #pragma omp critical
+                    #pragma omp critical                // Critical Section so Only One Thread Changes the Value of vector_num[] Every Time
                     {
                         classes[i] = distance;                  // Replace Min Distance
 
-                        if (flag) {
+                        if (flag)
+                        {
                             vector_num[cluster[i]]--;               // Decrement Number of Vectors of the Cluster Vector i Used to Belong to
                         }
 
@@ -201,7 +202,7 @@ void calcCentroids2(void)
     int cnt;
     int i, j, k;                                // Index Variables Declared Outside Loops for Good Practice
 
-    #pragma omp parallel for private(cnt, i, j, k) shared(vector_num, centroids) ordered
+    #pragma omp parallel for private(cnt, i, j, k) shared(vector_num, centroids) ordered        // Parallelize First For - Loop
     for (i = 0; i < Nc; i++)                // For Each Cluster Calculate New Centroid Based on Median
     {
         cnt = 0;                                // Variable to Stop Loop Early
