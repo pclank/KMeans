@@ -12,3 +12,8 @@ sys	0m8.917s
 real	0m25.803s
 user	2m0.725s
 sys	0m11.099s
+
+// No SIMD Instructions
+real	0m33.420s
+user	2m44.049s
+sys	0m8.687s
